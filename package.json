@@ -1,0 +1,13 @@
+{
+  "name": "automation_exercise",
+  "version": "1.0.0",
+  "description": "Complete Automation of E_Commerce Websit",
+  "main": "index.js",
+  "scripts": {},
+  "author": "Md.Sehikh Amin",
+  "license": "ISC",
+  "devDependencies": {
+    "@playwright/test": "^1.52.0",
+    "@types/node": "^22.15.29"
+  }
+}
