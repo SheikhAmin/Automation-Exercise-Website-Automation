@@ -18,8 +18,8 @@ test.beforeEach(async ({ page }: { page: Page }) => {
   await page.locator('a[href="/login"]').click();
 });
 
-// Sign Up Test
-test("Sign Up", async ({ page }: { page: Page }) => {
+// Test Case 1: Register User
+test("Register User", async ({ page }: { page: Page }) => {
   const obj = new SignUp(page);
   email = await Common.emailGenerator();
   password = await Common.passwordGenerator();
