@@ -6,15 +6,18 @@ import { describe } from "node:test";
 import { Common } from "../common/Common";
 import path from "path";
 import fs from "fs";
+import { Subscription } from "../pom/Subscription";
+import { ContactForm } from "../pom/ContactForm";
 
 
 test.describe("Registration and Login Tests", () => {
 // This is a test suite for user registration and login functionality on the Automation Exercise website.
-    let email: string;
-    let password: string;
+  let email: string;
+  let password: string;
 // Use static email generator function
 test.beforeEach(async ({ page }: { page: Page }) => {
   await page.goto('/');
+  await page.setViewportSize({ width: 1920, height: 1080 });
   await page.locator('a[href="/login"]').click();
 });
 
@@ -50,7 +53,7 @@ test("Register User", async ({ page }: { page: Page }) => {
   fs.writeFileSync(fixturesPath, JSON.stringify(credentials, null, 2));
 });
 
-// Log In + Cart Flow Test
+// Log In
 test("Log In", async ({ page }: { page: Page }) => {
   const fixturesPath= path.join('fixtures', 'credentials.json');
   if (!fs.existsSync(fixturesPath)) {
@@ -97,5 +100,21 @@ test("Log In", async ({ page }: { page: Page }) => {
 
   await cart.clickContinue1();
 });
-
+  //Test Case 2
+  test("Login User with correct email and password", async ({page}) =>{
+    const fixturesPath = path.join('fixtures', 'credentials.json');
+    if (!fs.existsSync(fixturesPath)) {
+      console.log("Credentials file not found. Please run the Sign Up test first.");
+      return; 
+    }
+    const credentials = JSON.parse(fs.readFileSync(fixturesPath, 'utf-8'));
+    email = credentials.email;
+    password = credentials.password;
+    const login = new Login(page);
+    await login.enterEmail(email);
+    await login.enterPassword(password);
+    await login.clickLogIn();
+    await expect(page.locator(":nth-child(10) > a")).toHaveText("Logged in as Sheikh Amin");
+  })
+ 
 });
