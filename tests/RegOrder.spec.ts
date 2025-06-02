@@ -116,5 +116,24 @@ test("Log In", async ({ page }: { page: Page }) => {
     await login.clickLogIn();
     await expect(page.locator(":nth-child(10) > a")).toHaveText("Logged in as Sheikh Amin");
   })
- 
+ //Test  Case 3
+  test("Login User with incorrect email and password", async ({page}) =>{
+    const login = new Login(page);
+    await login.enterEmail("fklsnflk@gmail.com");
+    await login.enterPassword("wrongpassword");  
+    await login.clickLogIn();
+    await page.waitForTimeout(2000);
+    await expect(page.locator("form[action = '/login']>p")).toHaveText("Your email or password is incorrect!");
+  });
+  //Test Case 4
+  test("Logout User", async ({page}) =>{
+    const login = new Login(page);
+    await login.enterEmail(email);
+    await login.enterPassword(password);
+    await login.clickLogIn();
+    await expect(page.locator(":nth-child(10) > a")).toHaveText("Logged in as Sheikh Amin");
+    await page.locator("div.shop-menu.pull-right>ul.nav.navbar-nav>li>a[href='/logout']").click();
+    await expect(page.url()).toContain("/login");
+  });
+
 });
