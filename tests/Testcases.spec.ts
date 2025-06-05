@@ -158,12 +158,20 @@ test.describe("Test Cases", () => {
     ).toHaveCount(1);
   });
   //Test Case 14
-  test("Place order: Register while checkout", async ({ page }) => {
+  test.only("Place order: Register while checkout", async ({ page }) => {
     await page.locator(":nth-child(6) .productinfo .btn").click();
     await page.locator(".modal-footer").click();
     await page.locator(".shop-menu .nav :nth-child(3) > a").click();
     await expect(page.locator(".active")).toContainText("Shopping Cart");
     await page.locator(".col-sm-6 > a").click();
     await page.locator(".modal-body :nth-child(2) > a").click();
+  });
+  //Test Case 15
+  test("Place Order: Register while Checkout", async ({ page }) => {
+    const cart = new Cart(page);
+    await page.locator(".shop-menu .nav :nth-child(3) > a").click();
+    await expect(page.locator(".active")).toContainText("Shopping Cart");
+    //await cart.clickProceedToCheckout();
+    //await cart.setEmail("");
   });
 });
