@@ -6,8 +6,14 @@ import { SignUp } from "../pom/SignUp";
 import { ContactForm } from "../pom/ContactForm";
 import { Subscription } from "../pom/Subscription";
 import { Cart } from "../pom/Cart";
+import * as fs from "fs";
+import * as path from "path";
+import { Common } from "../common/Common";
+import { Login } from "../pom/Login";
 
 test.describe("Test Cases", () => {
+  let email: string;
+  let password: string;
   test.beforeEach(async ({ page }) => {
     await page.goto("/");
   });
@@ -145,7 +151,7 @@ test.describe("Test Cases", () => {
   });
   //Test Case 13
   test("Verify Product Quantity in Cart", async ({ page }) => {
-    await page.locator("div.logo.pull-left>a[href='/']").isVisible();
+    await page.locator("div.logo.pull-left>a[href='/']").isVisible(); //Verify homepage is visible
     await page
       .locator("ul.nav.nav-pills.nav-justified>li>a[href='/product_details/1']")
       .click();
@@ -159,13 +165,56 @@ test.describe("Test Cases", () => {
   });
   //Test Case 14
   test.only("Place order: Register while checkout", async ({ page }) => {
-    await page.locator(":nth-child(6) .productinfo .btn").click();
-    await page.locator(".modal-footer").click();
-    await page.locator(".shop-menu .nav :nth-child(3) > a").click();
-    await expect(page.locator(".active")).toContainText("Shopping Cart");
-    await page.locator(".col-sm-6 > a").click();
-    await page.locator(".modal-body :nth-child(2) > a").click();
-  });
+      await page.locator("div.logo.pull-left>a[href='/']").isVisible(); //Verify homepage is visible
+      const product1 = page.locator(".single-products>.productinfo.text-center>a.btn.btn-default.add-to-cart[data-product-id='1']");
+      await product1.first().hover(); //Click "View Product" for any product from product page
+      await product1.first().click();
+      await page.locator("button.btn.btn-success.close-modal.btn-block").click(); //Click "Continue Shopping" button
+      await page.waitForTimeout(1000);
+      await page.locator("div.col-sm-8>div.shop-menu.pull-right>ul>li>a[href='/view_cart']").click(); //Click "Cart" button
+      await page.waitForTimeout(1000);
+      await expect(page.locator(".active")).toContainText("Shopping Cart");
+      await page.locator(".active").isVisible(); // Verify "Shopping Cart" is visible
+      await page.locator("a.btn.btn-default.check_out").click(); //Click "Proceed to Checkout" button
+      await page.locator("p.text-center>a[href='/login']").click(); //Click "Register / Login" button
+      await page.waitForTimeout(1000);
+
+      //SignUp
+      const obj = new SignUp(page);
+        email = await Common.emailGenerator();
+        password = await Common.passwordGenerator();
+        await obj.setName("Sheikh Amin");
+        await obj.setEmailAddress(email);
+        await obj.clickSignUp();
+        await obj.setGender();
+        await obj.setPassword(password);
+        await obj.setDay("7");
+        await obj.setMonth("June");
+        await obj.setYear("1999");
+        await obj.clickNewsLetter();
+        await obj.clickOffer();
+        await obj.setFirstName("Sheikh");
+        await obj.setLastName("Amin");
+        await obj.setCompany("Dhaka Bank");
+        await obj.setAddress("244 East Nakhalpara Tejgaon, Dhaka-1215");
+        await obj.setAddress2("244 East Nakhalpara Tejgaon, Dhaka-1215");
+        await obj.setCountry("Canada");
+        await obj.setCity("Dhaka");
+        await obj.setState("Dhaka");
+        await obj.setZipCode("1215");
+        await obj.setMobileNum("01521255651");
+        await obj.clickCreateAccount();
+      
+        const credentials = {email, password};
+        const fixturesPath = path.join('fixtures', 'credentials.json');
+        fs.writeFileSync(fixturesPath, JSON.stringify(credentials, null, 2));
+       
+        await page.getByText('Account Created!').isVisible(); // Verify account creation message
+        await page.getByRole('link', { name: 'Continue' }).click(); // Pause to allow user to see the registration details
+        await page.waitForTimeout(1000);
+
+        
+});
   //Test Case 15
   test("Place Order: Register while Checkout", async ({ page }) => {
     const cart = new Cart(page);

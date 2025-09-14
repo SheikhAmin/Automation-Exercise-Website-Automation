@@ -47,7 +47,7 @@ test("Register User", async ({ page }: { page: Page }) => {
   await obj.setZipCode("1215");
   await obj.setMobileNum("01521255651");
   await obj.clickCreateAccount();
-
+  await page.getByRole('link', { name: 'Continue' }).click(); //click 'continue' button after account creation
   const credentials = {email, password};
   const fixturesPath = path.join('fixtures', 'credentials.json');
   fs.writeFileSync(fixturesPath, JSON.stringify(credentials, null, 2));
